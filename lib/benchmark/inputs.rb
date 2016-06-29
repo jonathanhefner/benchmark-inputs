@@ -2,6 +2,20 @@ require 'benchmark/inputs/version'
 
 module Benchmark
 
+  # Initializes a benchmark job with the given inputs and yields that
+  # job to the given block.
+  #
+  # Example:
+  #   Benchmark.inputs(['abc', 'aaa', 'xyz', '']) do |job|
+  #     job.report('String#tr'){|s| s.tr('a', 'A') }
+  #     job.report('String#gsub'){|s| s.gsub(/a/, 'A') }
+  #     job.compare!
+  #   end
+  #
+  # @param [Array] vals input values to yield to each benchmark action
+  # @yield [job] configures job and runs benchmarks
+  # @yieldparam [Benchmark::Inputs::Job] job benchmark runner
+  # @return [Benchmark::Inputs::Job] benchmark runner
   def self.inputs(vals)
     job = Inputs::Job.new(vals)
     yield job
@@ -27,12 +41,34 @@ module Benchmark
         def_bench!
       end
 
+      # Sets the +dup_inputs+ flag.  If set to true, causes input values
+      # to be +dup+'d before they are passed to a +report+ block.  This
+      # is necessary when +report+ blocks destructively modify their
+      # arguments.
+      #
+      # Example:
+      #   Benchmark.inputs(['abc', 'aaa', 'xyz', '']) do |job|
+      #     job.dup_inputs = true  # <---
+      #     job.report('String#tr!'){|s| s.tr!('a', 'A') }
+      #     job.report('String#gsub!'){|s| s.gsub!(/a/, 'A') }
+      #     job.compare!
+      #   end
+      #
+      # @param [Boolean] val value to set
       def dup_inputs=(val)
         @dup_inputs = val
         def_bench!
         @dup_inputs
       end
 
+      # Benchmarks the given block using the initially provided input
+      # values.  If +#dup_inputs+ is set to true, each input value is
+      # +dup+'d before being passed to the block.  Afterwards, the
+      # block's invocations per second (i/s) is printed to +$stdout+.
+      #
+      # @param [String] label label for the benchmark
+      # @yield [input] action to benchmark
+      # @yieldparam input one of the initially provided input values
       def report(label)
         # estimate repititions
         reps = 1
@@ -58,6 +94,8 @@ module Benchmark
         r
       end
 
+      # Prints the relative speeds (from fastest to slowest) of all
+      # +#report+ed benchmarks to +$stdout+.
       def compare!
         return $stdout.puts('Nothing to compare!') if @reports.empty?
 
