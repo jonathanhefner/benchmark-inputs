@@ -64,13 +64,13 @@ Which prints something like the following to `$stdout`:
 
 ```
 String#tr
-  1376876.5 i/s (±0.01%)
+  1387268.0 i/s (±0.49%)
 String#gsub
-  264340.1 i/s (±0.02%)
+  264307.7 i/s (±1.95%)
 
 Comparison:
-    String#tr:   1376876.5 i/s
-  String#gsub:    264340.1 i/s - 5.21x slower
+    String#tr:   1387268.0 i/s
+  String#gsub:    264307.7 i/s - 5.25x slower
 ```
 
 
@@ -100,13 +100,13 @@ Which prints out something like:
 
 ```
 String#tr!
-  1777274.5 i/s (±0.01%)
+  1793132.0 i/s (±0.46%)
 String#gsub!
-  282396.3 i/s (±0.00%)
+  281588.6 i/s (±0.49%)
 
 Comparison:
-    String#tr!:   1777274.5 i/s
-  String#gsub!:    282396.3 i/s - 6.29x slower
+    String#tr!:   1793132.0 i/s
+  String#gsub!:    281588.6 i/s - 6.37x slower
 ```
 
 That shows a slightly larger performance gap than the previous

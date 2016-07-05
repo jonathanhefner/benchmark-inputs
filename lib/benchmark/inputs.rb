@@ -89,7 +89,7 @@ module Benchmark
         end
 
         $stdout.puts(r.label)
-        $stdout.printf("  %.1f i/s (\u00B1%.2f%%)\n", r.ips, r.stddev / r.ips)
+        $stdout.printf("  %.1f i/s (\u00B1%.2f%%)\n", r.ips, r.stddev / r.ips * 100)
         @reports << r
         r
       end
