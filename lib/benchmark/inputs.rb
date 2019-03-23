@@ -1,4 +1,4 @@
-require 'benchmark/inputs/version'
+require "benchmark/inputs/version"
 
 module Benchmark
 
@@ -6,9 +6,9 @@ module Benchmark
   # job to the given block.
   #
   # Example:
-  #   Benchmark.inputs(['abc', 'aaa', 'xyz', '']) do |job|
-  #     job.report('String#tr'){|s| s.tr('a', 'A') }
-  #     job.report('String#gsub'){|s| s.gsub(/a/, 'A') }
+  #   Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
+  #     job.report("String#tr"){|s| s.tr("a", "A") }
+  #     job.report("String#gsub"){|s| s.gsub(/a/, "A") }
   #     job.compare!
   #   end
   #
@@ -47,10 +47,10 @@ module Benchmark
       # arguments.
       #
       # Example:
-      #   Benchmark.inputs(['abc', 'aaa', 'xyz', '']) do |job|
+      #   Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
       #     job.dup_inputs = true  # <---
-      #     job.report('String#tr!'){|s| s.tr!('a', 'A') }
-      #     job.report('String#gsub!'){|s| s.gsub!(/a/, 'A') }
+      #     job.report("String#tr!"){|s| s.tr!("a", "A") }
+      #     job.report("String#gsub!"){|s| s.gsub!(/a/, "A") }
       #     job.compare!
       #   end
       #
@@ -97,7 +97,7 @@ module Benchmark
       # Prints the relative speeds (from fastest to slowest) of all
       # +#report+ed benchmarks to +$stdout+.
       def compare!
-        return $stdout.puts('Nothing to compare!') if @reports.empty?
+        return $stdout.puts("Nothing to compare!") if @reports.empty?
 
         @reports.sort_by!{|r| -r.ips }
         @reports.each{|r| r.slower_than!(@reports.first) }
@@ -109,9 +109,9 @@ module Benchmark
         @reports.each_with_index do |r, i|
           $stdout.printf(format, r.label, r.ips)
           if r.ratio
-            $stdout.printf(' - %.2fx slower', r.ratio)
+            $stdout.printf(" - %.2fx slower", r.ratio)
           elsif i > 0
-            $stdout.printf(' - same-ish: difference falls within error')
+            $stdout.printf(" - same-ish: difference falls within error")
           end
           $stdout.puts
         end
@@ -123,12 +123,12 @@ module Benchmark
       def def_bench!
         assigns = @inputs.each_index.map do |i|
           "x#{i} = @inputs[#{i}]"
-        end.join(';')
+        end.join(";")
 
         yields = @inputs.each_with_index.map do |x, i|
-          dup = (@dup_inputs && x.respond_to?(:dup)) ? '.dup' : ''
+          dup = (@dup_inputs && x.respond_to?(:dup)) ? ".dup" : ""
           "yield(x#{i}#{dup})"
-        end.join(';')
+        end.join(";")
 
         code = <<-CODE
           def bench(reps)

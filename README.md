@@ -14,12 +14,12 @@ for certain usages, benchmark-ips doesn't let me write benchmarks the
 way I'd like. Consider the following example, *using benchmark-ips*:
 
 ```ruby
-require 'benchmark/ips' ### USING benchmark-ips (NOT benchmark-inputs)
+require "benchmark/ips" ### USING benchmark-ips (NOT benchmark-inputs)
 
-STRINGS = ['abc', 'aaa', 'xyz', '']
+STRINGS = ["abc", "aaa", "xyz", ""]
 Benchmark.ips do |job|
-  job.report('String#tr'){ STRINGS.each{|s| s.tr('a', 'A') } }
-  job.report('String#gsub'){ STRINGS.each{|s| s.gsub(/a/, 'A') } }
+  job.report("String#tr"){ STRINGS.each{|s| s.tr("a", "A") } }
+  job.report("String#gsub"){ STRINGS.each{|s| s.gsub(/a/, "A") } }
   job.compare!
 end
 ```
@@ -31,17 +31,17 @@ this can be a problem.  A possible workaround is to invoke the function
 on each value individually, but that is more verbose and error-prone:
 
 ```ruby
-require 'benchmark/ips' ### USING benchmark-ips (NOT benchmark-inputs)
+require "benchmark/ips" ### USING benchmark-ips (NOT benchmark-inputs)
 
-s1 = 'abc'; s2 = 'aaa'; s3 = 'xyz'; s4 = ''
+s1 = "abc"; s2 = "aaa"; s3 = "xyz"; s4 = ""
 Benchmark.ips do |job|
-  job.report('String#tr') do
-    s1.tr('a', 'A'); s2.tr('a', 'A')
-    s3.tr('a', 'A'); s4.tr('a', 'A')
+  job.report("String#tr") do
+    s1.tr("a", "A"); s2.tr("a", "A")
+    s3.tr("a", "A"); s4.tr("a", "A")
   end
-  job.report('String#gsub') do
-    s1.gsub(/a/, 'A'); s2.gsub(/a/, 'A')
-    s3.gsub(/a/, 'A'); s4.gsub(/a/, 'A')
+  job.report("String#gsub") do
+    s1.gsub(/a/, "A"); s2.gsub(/a/, "A")
+    s3.gsub(/a/, "A"); s4.gsub(/a/, "A")
   end
   job.compare!
 end
@@ -51,11 +51,11 @@ end
 this gem: <a name="example1"></a>
 
 ```ruby
-require 'benchmark/inputs' ### USING benchmark-inputs
+require "benchmark/inputs" ### USING benchmark-inputs
 
-Benchmark.inputs(['abc', 'aaa', 'xyz', '']) do |job|
-  job.report('String#tr'){|s| s.tr('a', 'A') }
-  job.report('String#gsub'){|s| s.gsub(/a/, 'A') }
+Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
+  job.report("String#tr"){|s| s.tr("a", "A") }
+  job.report("String#gsub"){|s| s.gsub(/a/, "A") }
   job.compare!
 end
 ```
@@ -86,12 +86,12 @@ job already controls the input data, all of this can be handled with a
 single configuration line:
 
 ```ruby
-require 'benchmark/inputs'
+require "benchmark/inputs"
 
-Benchmark.inputs(['abc', 'aaa', 'xyz', '']) do |job|
+Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
   job.dup_inputs = true  # <--- single configuration line
-  job.report('String#tr!'){|s| s.tr!('a', 'A') }
-  job.report('String#gsub!'){|s| s.gsub!(/a/, 'A') }
+  job.report("String#tr!"){|s| s.tr!("a", "A") }
+  job.report("String#gsub!"){|s| s.gsub!(/a/, "A") }
   job.compare!
 end
 ```
