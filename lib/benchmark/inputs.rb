@@ -5,19 +5,31 @@ module Benchmark
   # Initializes a benchmark job with the given inputs and yields that
   # job to the given block.
   #
-  # Example:
+  # @example Benchmarking non-destructive operations
   #   Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
   #     job.report("String#tr"){|s| s.tr("a", "A") }
   #     job.report("String#gsub"){|s| s.gsub(/a/, "A") }
   #     job.compare!
   #   end
   #
-  # @param [Array] vals input values to yield to each benchmark action
-  # @yield [job] configures job and runs benchmarks
-  # @yieldparam [Benchmark::Inputs::Job] job benchmark runner
-  # @return [Benchmark::Inputs::Job] benchmark runner
-  def self.inputs(vals)
-    job = Inputs::Job.new(vals)
+  # @example Benchmarking destructive operations
+  #   Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
+  #     job.dup_inputs = true
+  #     job.report("String#tr!"){|s| s.tr!("a", "A") }
+  #     job.report("String#gsub!"){|s| s.gsub!(/a/, "A") }
+  #     job.compare!
+  #   end
+  #
+  # @param values [Array]
+  #   input values to yield to each benchmark action
+  # @yield [job]
+  #   configures job and runs benchmarks
+  # @yieldparam job [Benchmark::Inputs::Job]
+  #   benchmark runner
+  # @return [Benchmark::Inputs::Job]
+  #   benchmark runner
+  def self.inputs(values)
+    job = Inputs::Job.new(values)
     yield job
     job
   end
@@ -29,9 +41,9 @@ module Benchmark
     NS_PER_MS = NS_PER_S / 1_000
 
     class Job
-      attr_accessor :sample_n, :sample_dt
-      attr_reader   :dup_inputs, :reports
 
+      # @param inputs [Array]
+      #   input values to yield to each benchmark action
       def initialize(inputs)
         @inputs = inputs
         @dup_inputs = false
@@ -41,34 +53,54 @@ module Benchmark
         def_bench!
       end
 
-      # Sets the +dup_inputs+ flag.  If set to true, causes input values
-      # to be +dup+'d before they are passed to a +report+ block.  This
-      # is necessary when +report+ blocks destructively modify their
+      # Indicates whether input values will be +dup+-ed before they are
+      # passed to a {report} block.  Defaults to +false+.  This should
+      # be set to +true+ if {report} blocks destructively modify their
       # arguments.
       #
-      # Example:
-      #   Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
-      #     job.dup_inputs = true  # <---
-      #     job.report("String#tr!"){|s| s.tr!("a", "A") }
-      #     job.report("String#gsub!"){|s| s.gsub!(/a/, "A") }
-      #     job.compare!
-      #   end
+      # @return [Boolean]
+      attr_reader :dup_inputs
+
+      # See {dup_inputs}.
       #
-      # @param [Boolean] val value to set
-      def dup_inputs=(val)
-        @dup_inputs = val
+      # @param flag [Boolean]
+      # @return [Boolean]
+      def dup_inputs=(flag)
+        @dup_inputs = flag
         def_bench!
         @dup_inputs
       end
 
-      # Benchmarks the given block using the initially provided input
-      # values.  If +#dup_inputs+ is set to true, each input value is
-      # +dup+'d before being passed to the block.  Afterwards, the
-      # block's invocations per second (i/s) is printed to +$stdout+.
+      # The number of samples to take when benchmarking.  Defaults to 10.
       #
-      # @param [String] label label for the benchmark
-      # @yield [input] action to benchmark
-      # @yieldparam input one of the initially provided input values
+      # @return [Integer]
+      attr_accessor :sample_n
+
+      # The approximate duration of time (in nanoseconds) each sample
+      # should take when benchmarking.  Defaults to 200,000 nanoseconds.
+      #
+      # @return [Integer]
+      attr_accessor :sample_dt
+
+      # Array of benchmark reports.  Each call to {report} adds an
+      # element to this array.
+      #
+      # @return [Array<Benchmark::Inputs::Report>]
+      attr_reader :reports
+
+      # Benchmarks the given block using the previously provided input
+      # values.  If {dup_inputs} is set to true, each input value is
+      # +dup+'d before being passed to the block.  The block's
+      # iterations per second (i/s) is printed to +$stdout+, and a
+      # {Report} is added to {reports}.
+      #
+      # @param label [String]
+      #   label for the benchmark
+      # @yield [input]
+      #   action to benchmark
+      # @yieldparam input [Object]
+      #   one of the initially provided input values
+      # @return [void]
       def report(label)
         # estimate repititions
         reps = 1
@@ -91,11 +123,12 @@ module Benchmark
         $stdout.puts(r.label)
         $stdout.printf("  %.1f i/s (\u00B1%.2f%%)\n", r.ips, r.stddev / r.ips * 100)
         @reports << r
-        r
       end
 
       # Prints the relative speeds (from fastest to slowest) of all
-      # +#report+ed benchmarks to +$stdout+.
+      # {report}-ed benchmarks to +$stdout+.
+      #
+      # @return [void]
       def compare!
         return $stdout.puts("Nothing to compare!") if @reports.empty?
 
@@ -151,8 +184,21 @@ module Benchmark
 
 
     class Report
-      attr_reader :label, :ratio
+      # The label for the report.
+      #
+      # @return [String]
+      attr_reader :label
 
+      # The ratio of iterations per second for this report compared to
+      # the fastest report.  Will be +nil+ if the difference between the
+      # two falls within the combined measurement error.
+      #
+      # This value is set by {Benchmark::Inputs::Job#compare!}.
+      #
+      # @return [Float, nil]
+      attr_reader :ratio
+
+      # @!visibility private
       def initialize(label, invocs_per_sample)
         @label = label.to_s
         @invocs_per_sample = invocs_per_sample.to_f
@@ -163,6 +209,7 @@ module Benchmark
         @m2 = 0.0
       end
 
+      # @!visibility private
       def add_sample(time_ns)
         sample_ips = @invocs_per_sample * NS_PER_S / time_ns
 
@@ -175,18 +222,26 @@ module Benchmark
         @stddev = nil
       end
 
+      # The estimated iterations per second for the report.
+      #
+      # @return [Float]
       def ips
         @mean
       end
 
+      # The {ips} standard deviation.
+      #
+      # @return [Float]
       def stddev
         @stddev ||= @n < 2 ? 0.0 : Math.sqrt(@m2 / (@n - 1))
       end
 
+      # @!visibility private
       def slower_than!(faster)
         @ratio = overlap?(faster) ? nil : (faster.ips / self.ips)
       end
 
+      # @!visibility private
       def overlap?(faster)
         (faster.ips - faster.stddev) <= (self.ips + self.stddev)
       end
