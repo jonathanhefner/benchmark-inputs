@@ -60,4 +60,9 @@ class Benchmark::InputsTest < Minitest::Test
     assert_equal "b", strs[1]
   end
 
+  def test_empty_inputs
+    Benchmark.inputs(["something"]){} # sanity check: no raise
+    assert_raises(ArgumentError){ Benchmark.inputs([]){} }
+  end
+
 end

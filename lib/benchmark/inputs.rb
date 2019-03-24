@@ -28,6 +28,8 @@ module Benchmark
   #   benchmark runner
   # @return [Benchmark::Inputs::Job]
   #   benchmark runner
+  # @raise [ArgumentError]
+  #   if +values+ is empty
   def self.inputs(values)
     job = Inputs::Job.new(values)
     yield job
@@ -44,7 +46,11 @@ module Benchmark
 
       # @param inputs [Array]
       #   input values to yield to each benchmark action
+      # @raise [ArgumentError]
+      #   if +inputs+ is empty
       def initialize(inputs)
+        raise ArgumentError, "No inputs specified" if inputs.empty?
+
         @inputs = inputs
         @dup_inputs = false
         @sample_n = 10
