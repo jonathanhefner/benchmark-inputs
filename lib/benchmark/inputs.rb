@@ -13,8 +13,7 @@ module Benchmark
   #   end
   #
   # @example Benchmarking destructive operations
-  #   Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
-  #     job.dup_inputs = true
+  #   Benchmark.inputs(["abc", "aaa", "xyz", ""], dup_inputs: true) do |job|
   #     job.report("String#tr!"){|s| s.tr!("a", "A") }
   #     job.report("String#gsub!"){|s| s.gsub!(/a/, "A") }
   #     job.compare!
@@ -22,6 +21,15 @@ module Benchmark
   #
   # @param values [Array]
   #   input values to yield to each benchmark action
+  # @param options [Hash]
+  # @option options :dup_inputs [Boolean]
+  #   whether input values will be +dup+-ed before they are passed to a
+  #   {Inputs::Job#report} block
+  # @option options :sample_n [Integer]
+  #   number of samples to take when benchmarking
+  # @option options :sample_dt [Integer]
+  #   approximate duration of time (in nanoseconds) each sample should
+  #   take when benchmarking
   # @yield [job]
   #   configures job and runs benchmarks
   # @yieldparam job [Benchmark::Inputs::Job]
@@ -30,8 +38,8 @@ module Benchmark
   #   benchmark runner
   # @raise [ArgumentError]
   #   if +values+ is empty
-  def self.inputs(values)
-    job = Inputs::Job.new(values)
+  def self.inputs(values, **options)
+    job = Inputs::Job.new(values, options)
     yield job
     job
   end
@@ -46,15 +54,23 @@ module Benchmark
 
       # @param inputs [Array]
       #   input values to yield to each benchmark action
+      # @param dup_inputs [Boolean]
+      #   whether input values will be +dup+-ed before they are passed
+      #   to a {report} block
+      # @param sample_n [Integer]
+      #   number of samples to take when benchmarking
+      # @param sample_dt [Integer]
+      #   approximate duration of time (in nanoseconds) each sample
+      #   should take when benchmarking
       # @raise [ArgumentError]
       #   if +inputs+ is empty
-      def initialize(inputs)
+      def initialize(inputs, dup_inputs: false, sample_n: 10, sample_dt: NS_PER_MS * 200)
         raise ArgumentError, "No inputs specified" if inputs.empty?
 
         @inputs = inputs
-        @dup_inputs = false
-        @sample_n = 10
-        @sample_dt = NS_PER_MS * 200
+        @dup_inputs = dup_inputs
+        @sample_n = sample_n
+        @sample_dt = sample_dt
         @reports = []
         def_bench!
       end

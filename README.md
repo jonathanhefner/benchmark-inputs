@@ -84,16 +84,15 @@ Destructive operations also pose a challenge for microbenchmarks.  Each
 invocation needs to operate on the same data, but `dup`ing the data
 introduces too much overhead and skew.
 
-benchmark-inputs' solution is to estimate the overhead incurred by
-`dup`, and exclude that from time measurements.  Because the benchmark
-job already controls the input data, all of this can be handled with a
-single configuration line:
+benchmark-inputs' solution is to estimate the overhead incurred by each
+`dup`, and exclude that from the time measurements.  Because the
+benchmark job already controls the input data, everything can be handled
+behind the scenes.  To enable this, use the `dup_inputs` option:
 
 ```ruby
 require "benchmark/inputs"
 
-Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
-  job.dup_inputs = true  # <--- single configuration line
+Benchmark.inputs(["abc", "aaa", "xyz", ""], dup_inputs: true) do |job|
   job.report("String#tr!"){|s| s.tr!("a", "A") }
   job.report("String#gsub!"){|s| s.gsub!(/a/, "A") }
   job.compare!

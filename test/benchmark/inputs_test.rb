@@ -60,6 +60,14 @@ class Benchmark::InputsTest < Minitest::Test
     assert_equal "b", strs[1]
   end
 
+  def test_options_hash
+    Benchmark.inputs([nil], dup_inputs: true, sample_n: 42, sample_dt: 9001) do |job|
+      assert_equal true, job.dup_inputs
+      assert_equal 42, job.sample_n
+      assert_equal 9001, job.sample_dt
+    end
+  end
+
   def test_empty_inputs
     Benchmark.inputs(["something"]){} # sanity check: no raise
     assert_raises(ArgumentError){ Benchmark.inputs([]){} }
