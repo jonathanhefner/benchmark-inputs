@@ -164,9 +164,8 @@ module Benchmark
           "x#{i} = @inputs[#{i}]"
         end.join(";")
 
-        yields = @inputs.each_with_index.map do |x, i|
-          dup = (@dup_inputs && x.respond_to?(:dup)) ? ".dup" : ""
-          "yield(x#{i}#{dup})"
+        yields = @inputs.each_index.map do |i|
+          dup_inputs ? "yield(x#{i}.dup)" : "yield(x#{i})"
         end.join(";")
 
         code = <<-CODE
