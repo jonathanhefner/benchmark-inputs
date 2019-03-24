@@ -12,6 +12,9 @@ class Benchmark::InputsTest < Minitest::Test
 
     out, err = capture_io do
       reports = Benchmark.inputs([0, 1]) do |job|
+        job.sample_n = 1
+        job.sample_dt = 1000
+
         job.report("aaa"){|i| counters[i] += 1 }
         job.report("bbb"){|i| counters[i + 2] += 1 }
         job.compare!
@@ -39,6 +42,9 @@ class Benchmark::InputsTest < Minitest::Test
 
     out, err = capture_io do
       reports = Benchmark.inputs(strs) do |job|
+        job.sample_n = 1
+        job.sample_dt = 1000
+
         job.dup_inputs = true
         job.report("tr!"){|s| s.tr!("a-z", "_") }
         job.report("gsub!"){|s| s.gsub!(/[a-z]/, "_") }
