@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "benchmark-inputs"
   spec.version       = Benchmark::Inputs::VERSION
   spec.authors       = ["Jonathan Hefner"]
-  spec.email         = ["jonathan.hefner@gmail.com"]
+  spec.email         = ["jonathan@hefner.pro"]
 
   spec.summary       = %q{Input-focused benchmarking}
   spec.homepage      = "https://github.com/jonathanhefner/benchmark-inputs"
