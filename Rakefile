@@ -3,14 +3,6 @@ require "rake/testtask"
 require "yard"
 
 
-desc 'Launch IRB with this gem pre-loaded'
-task :irb do
-  require "benchmark/inputs"
-  require "irb"
-  ARGV.clear
-  IRB.start
-end
-
 YARD::Rake::YardocTask.new(:doc) do |t|
 end
 
