@@ -21,9 +21,7 @@ class Benchmark::InputsTest < Minitest::Test
       end.reports
     end
 
-    assert_equal 2, reports.length
-    assert_equal "aaa", reports[0].label
-    assert_equal "bbb", reports[1].label
+    assert_equal ["aaa", "bbb"], reports.map(&:label).sort
 
     assert_operator counters[0], :>, 0
     assert_equal counters[0], counters[1]
