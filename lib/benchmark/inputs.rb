@@ -39,7 +39,7 @@ module Benchmark
   # @raise [ArgumentError]
   #   if +values+ is empty
   def self.inputs(values, **options)
-    job = Inputs::Job.new(values, options)
+    job = Inputs::Job.new(values, **options)
     yield job
     job
   end
