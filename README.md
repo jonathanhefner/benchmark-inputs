@@ -18,8 +18,8 @@ require "benchmark/ips" ### USING benchmark-ips (NOT benchmark-inputs)
 
 STRINGS = ["abc", "aaa", "xyz", ""]
 Benchmark.ips do |job|
-  job.report("String#tr"){ STRINGS.each{|s| s.tr("a", "A") } }
-  job.report("String#gsub"){ STRINGS.each{|s| s.gsub(/a/, "A") } }
+  job.report("String#tr"){ STRINGS.each{|string| string.tr("a", "A") } }
+  job.report("String#gsub"){ STRINGS.each{|string| string.gsub(/a/, "A") } }
   job.compare!
 end
 ```
@@ -33,33 +33,36 @@ each value individually, but that is more verbose and more error-prone:
 ```ruby
 require "benchmark/ips" ### USING benchmark-ips (NOT benchmark-inputs)
 
-s1, s2, s3, s4 = ["abc", "aaa", "xyz", ""]
+string1, string2, string3, string4 = ["abc", "aaa", "xyz", ""]
 Benchmark.ips do |job|
   job.report("String#tr") do
-    s1.tr("a", "A")
-    s2.tr("a", "A")
-    s3.tr("a", "A")
-    s4.tr("a", "A")
+    string1.tr("a", "A")
+    string2.tr("a", "A")
+    string3.tr("a", "A")
+    string4.tr("a", "A")
   end
   job.report("String#gsub") do
-    s1.gsub(/a/, "A")
-    s2.gsub(/a/, "A")
-    s3.gsub(/a/, "A")
-    s4.gsub(/a/, "A")
+    string1.gsub(/a/, "A")
+    string2.gsub(/a/, "A")
+    string3.gsub(/a/, "A")
+    string4.gsub(/a/, "A")
   end
   job.compare!
 end
 ```
 
+
+## Usage
+
 *Enter benchmark-inputs*.  Here is how the same benchmark looks using
-this gem: <a name="example1"></a>
+this gem:
 
 ```ruby
 require "benchmark/inputs" ### USING benchmark-inputs
 
 Benchmark.inputs(["abc", "aaa", "xyz", ""]) do |job|
-  job.report("String#tr"){|s| s.tr("a", "A") }
-  job.report("String#gsub"){|s| s.gsub(/a/, "A") }
+  job.report("String#tr"){|string| string.tr("a", "A") }
+  job.report("String#gsub"){|string| string.gsub(/a/, "A") }
   job.compare!
 end
 ```
@@ -93,8 +96,8 @@ behind the scenes.  To enable this, use the `dup_inputs` option:
 require "benchmark/inputs"
 
 Benchmark.inputs(["abc", "aaa", "xyz", ""], dup_inputs: true) do |job|
-  job.report("String#tr!"){|s| s.tr!("a", "A") }
-  job.report("String#gsub!"){|s| s.gsub!(/a/, "A") }
+  job.report("String#tr!"){|string| string.tr!("a", "A") }
+  job.report("String#gsub!"){|string| string.gsub!(/a/, "A") }
   job.compare!
 end
 ```
@@ -112,11 +115,16 @@ Comparison:
   String#gsub!:    281588.6 i/s - 6.37x slower
 ```
 
-That shows a slightly larger performance gap than the previous
+The above shows a slightly larger performance gap than the previous
 benchmark.  This makes sense because the overhead of allocating new
 strings -- previously via a non-bang method, but now via `dup` -- is now
 excluded from the timings.  Thus, the speed of `tr!` relative to `gsub!`
 is further emphasized.
+
+
+## API
+
+See the [API documentation](https://www.rubydoc.info/gems/benchmark-inputs).
 
 
 ## Limitations
@@ -126,26 +134,28 @@ is given.  Each input value becomes a local variable.  While there is
 theoretically no limit to the number of local variables that can be
 generated, more than a few hundred may slow down the benchmark.  But,
 because input values are used to represent different scenarios rather
-than control the number of invocations, this limitation shouldn't pose a
-problem.
+than control the number of invocations, this limitation should not pose
+a problem.
 
 
 ## Installation
+
+Install the [gem](https://rubygems.org/gems/benchmark-inputs):
 
 ```bash
 $ gem install benchmark-inputs
 ```
 
+Then require in your benchmark script:
 
-## Usage
-
-See the [example above](#example1), or check out the
-[API documentation](http://www.rubydoc.info/gems/benchmark-inputs).
+```ruby
+require "benchmark/inputs"
+```
 
 
 ## License
 
-[MIT License](http://opensource.org/licenses/MIT)
+[MIT License](https://opensource.org/licenses/MIT)
 
 
 
