@@ -1,4 +1,4 @@
-# benchmark-inputs [![Build Status](https://travis-ci.org/jonathanhefner/benchmark-inputs.svg?branch=master)](https://travis-ci.org/jonathanhefner/benchmark-inputs)
+# benchmark-inputs
 
 Input-focused benchmarking for Ruby.  Given one or more blocks and an
 array of inputs to yield to each of them, benchmark-inputs will measure
