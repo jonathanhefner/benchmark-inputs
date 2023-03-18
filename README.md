@@ -140,17 +140,7 @@ a problem.
 
 ## Installation
 
-Install the [gem](https://rubygems.org/gems/benchmark-inputs):
-
-```bash
-$ gem install benchmark-inputs
-```
-
-Then require in your benchmark script:
-
-```ruby
-require "benchmark/inputs"
-```
+Install the [`benchmark-inputs` gem](https://rubygems.org/gems/benchmark-inputs).
 
 
 ## License
