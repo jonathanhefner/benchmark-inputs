@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.summary       = %q{Input-focused benchmarking}
   spec.homepage      = "https://github.com/jonathanhefner/benchmark-inputs"
   spec.license       = "MIT"
-  spec.required_ruby_version = ">= 3.1"
+  spec.required_ruby_version = ">= 3.4"
 
   spec.metadata["source_code_uri"] = spec.homepage
   spec.metadata["changelog_uri"] = spec.metadata["source_code_uri"] + "/blob/master/CHANGELOG.md"
