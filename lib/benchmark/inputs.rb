@@ -98,7 +98,7 @@ module Benchmark
       #   One of the Job's input values
       # @return [void]
       def report(label)
-        # estimate repititions
+        # estimate repetitions
         reps = 1
         reps_time = 0
         while reps_time < @sample_dt
