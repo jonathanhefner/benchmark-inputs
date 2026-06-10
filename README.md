@@ -1,17 +1,17 @@
 # benchmark-inputs
 
 Input-focused benchmarking for Ruby.  Given one or more blocks and an
-array of inputs to yield to each of them, benchmark-inputs will measure
-the speed (in invocations per second) of each block.  Blocks which
-execute very quickly, as in microbenchmarks, are automatically invoked
-repeatedly to provide accurate measurements.
+array of inputs to yield to each of them, `benchmark-inputs` will
+measure the speed (in invocations per second) of each block.  Blocks
+which execute very quickly, as in microbenchmarks, are automatically
+invoked repeatedly to provide accurate measurements.
 
 
 ## Motivation
 
-I <3 [Fast Ruby][fast-ruby].  By extension, I <3 [benchmark-ips].  But,
-for some use cases, benchmark-ips doesn't let me write benchmarks the
-way I'd like.  Consider the following example, *using benchmark-ips*:
+I <3 [Fast Ruby][fast-ruby].  By extension, I <3 [`benchmark-ips`][benchmark-ips].
+But, for some use cases, `benchmark-ips` doesn't let me write benchmarks
+the way I'd like.  Consider the following example *using `benchmark-ips`*:
 
 ```ruby
 require "benchmark/ips" ### USING benchmark-ips (NOT benchmark-inputs)
@@ -54,7 +54,7 @@ end
 
 ## Usage
 
-*Enter benchmark-inputs*.  Here is how the same benchmark looks using
+*Enter `benchmark-inputs`*.  Here is how the same benchmark looks using
 this gem:
 
 ```ruby
@@ -87,8 +87,8 @@ Destructive operations also pose a challenge for microbenchmarks.  Each
 invocation needs to operate on the same data, but `dup`ing the data
 introduces too much overhead and skew.
 
-benchmark-inputs' solution is to estimate the overhead incurred by each
-`dup`, and exclude that from the time measurements.  Because the
+`benchmark-inputs`'s solution is to estimate the overhead incurred by
+each `dup`, and exclude that from the time measurements.  Because the
 benchmark job already controls the input data, everything can be handled
 behind the scenes.  To enable this, use the `dup_inputs` option:
 
